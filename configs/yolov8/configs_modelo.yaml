@@ -1,0 +1,7 @@
+path: '/content/dataset/'
+train: 'train/'
+val: 'valid/'
+test: # opcional
+
+nc: 1
+names: ['gasleak']

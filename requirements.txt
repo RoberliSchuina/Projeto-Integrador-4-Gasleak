@@ -1,0 +1,4 @@
+ultralytics>=8.3
+opencv-python>=4.8
+onnx>=1.15          # apenas para exportar/rodar o modelo em ONNX
+onnxruntime>=1.17   # apenas para rodar o modelo em ONNX

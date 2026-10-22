@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Dados e saídas do YOLO (o dataset fica no Roboflow / Google Drive)
+data/dataset/
+data/obj/
+runs/
+*.zip
+
+# Mídias pesadas (vídeos de teste e resultados ficam no Google Drive)
+*.mp4
+*.avi
+*.mov
+
+# Pesos: só o best.pt oficial vai para o repositório
+*.onnx
+*.weights
+weights/*.pt
+!weights/best.pt
+yolov8*.pt
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
