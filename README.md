@@ -2,13 +2,18 @@
 
 **IA para detecção e monitoramento de vazamento de gás em plataformas de petróleo usando visão computacional.**
 
-Projeto Integrador 4 (FAESA, 2026.02), com base no trabalho da optativa *Uso de Inteligência Artificial na Descarbonização* (D010397).
+Projeto Integrador Engenharia da Computação (D009351), FAESA 2026.02, desenvolvido a partir do trabalho realizado na disciplina optativa *Uso de Inteligência Artificial na Descarbonização* (D010397), semestre 2025/01.
 
 <p align="center">
   <img src="results/exemplos/deteccao_01.jpg" width="32%">
   <img src="results/exemplos/deteccao_03.jpg" width="32%">
   <img src="results/exemplos/deteccao_05.jpg" width="32%">
 </p>
+
+## Apresentação
+
+- [Apresentação em PDF](docs/apresentacao/Apresentacao_Projeto_Integrador_v2.pdf) (31 slides, abre direto no GitHub)
+- [Apresentação em PowerPoint com os vídeos](https://github.com/RoberliSchuina/Projeto-Integrador-4-Gasleak/releases/tag/apresentacao-v2) (.pptx de 318 MB, disponível na página de Releases por exceder o limite de 100 MB por arquivo do repositório)
 
 ## Contexto
 
@@ -79,6 +84,8 @@ O vídeo com o resultado da detecção está na [pasta do projeto no Google Driv
 ├── results/
 │   ├── treinamento/  # results.csv, curvas e lotes de validação
 │   └── exemplos/     # imagens de teste com as detecções
+├── docs/
+│   └── apresentacao/ # apresentação em PDF (o .pptx com vídeos está nas Releases)
 └── data/             # instruções para baixar o dataset (não versionado)
 ```
 
@@ -142,3 +149,4 @@ O treino usa [`configs/darknet/yolov4_custom.cfg`](configs/darknet/yolov4_custom
 - Notebook no Colab: https://colab.research.google.com/drive/1HVmY2yG92IVbBllGE5xDI1HWjclknZVJ
 - Datasets públicos no Roboflow Universe (CC BY 4.0): [detecção](https://universe.roboflow.com/roberli/gas-leak-x7van-qfi52/dataset/1) e [segmentação](https://universe.roboflow.com/roberli/gas-leak-ka6fi-uahui/dataset/1)
 - Arquivos do projeto (vídeos, pesos, dataset zipado): https://drive.google.com/drive/folders/1fbmdwq0HorSvJ0A4UIHge39IE8-hVHQb
+- Apresentação (.pptx com vídeos): https://github.com/RoberliSchuina/Projeto-Integrador-4-Gasleak/releases/tag/apresentacao-v2
