@@ -5,9 +5,9 @@
 Projeto Integrador 4 (FAESA, 2026.02), com base no trabalho da optativa *Uso de Inteligência Artificial na Descarbonização* (D010397).
 
 <p align="center">
-  <img src="results/exemplos/deteccao_04.jpg" width="32%">
+  <img src="results/exemplos/deteccao_01.jpg" width="32%">
+  <img src="results/exemplos/deteccao_03.jpg" width="32%">
   <img src="results/exemplos/deteccao_05.jpg" width="32%">
-  <img src="results/exemplos/deteccao_06.jpg" width="32%">
 </p>
 
 ## Contexto
@@ -30,8 +30,10 @@ Câmera OGI / vídeo / imagem ──► YOLOv8s (classe "gasleak") ──► cai
 | Algoritmo | YOLOv8s (Ultralytics), classe única `gasleak` |
 | Ambiente | Google Colab com GPU |
 | Bibliotecas | Ultralytics, OpenCV |
-| Dataset | Imagens de vazamentos anotadas no [Roboflow](https://app.roboflow.com/roberli/detector-de-gas) |
-| Versão anterior | YOLOv4 + Darknet (configs em [`configs/darknet`](configs/darknet)) |
+| Dataset | Imagens de vazamentos anotadas no Roboflow (ver [`data/`](data)) |
+| Versão anterior | YOLOv4 com Darknet e OpenCV ([notebooks](notebooks/yolov4), [configs](configs/darknet) e [scripts](src/darknet)) |
+
+O projeto evoluiu em duas etapas: primeiro um detector **YOLOv4** treinado com Darknet e executado com OpenCV; depois o modelo final em **YOLOv8s** (Ultralytics), que é o descrito nos resultados abaixo.
 
 ## Resultados
 
@@ -45,23 +47,33 @@ Tempo total de treino: cerca de 76 min. Curvas de perda e métricas por época e
 
 ![Curvas de treino](results/treinamento/results.png)
 
+| Matriz de confusão (normalizada) | Curva Precisão × Recall |
+|---|---|
+| ![Matriz de confusão](results/treinamento/confusion_matrix_normalized.png) | ![Curva PR](results/treinamento/PR_curve.png) |
+
 | Rótulos reais (validação) | Predições do modelo |
 |---|---|
-| ![labels](results/treinamento/labels.jpg) | ![pred](results/treinamento/val_batch0_pred.jpg) |
+| ![Rótulos](results/treinamento/val_batch0_labels.jpg) | ![Predições](results/treinamento/val_batch0_pred.jpg) |
+
+As curvas F1, P e R e a distribuição dos rótulos (`labels.jpg`) também estão em [`results/treinamento`](results/treinamento).
 
 O vídeo com o resultado da detecção está na [pasta do projeto no Google Drive](https://drive.google.com/drive/folders/1fbmdwq0HorSvJ0A4UIHge39IE8-hVHQb).
 
 ## Estrutura do repositório
 
 ```
-├── notebooks/
-│   └── YOLOv8_Treinamento_Customizado_GasLeak.ipynb   # notebook original do Colab (sem saídas)
+├── notebooks/        # notebooks do Colab (sem saídas)
+│   ├── YOLOv8_Treinamento_Customizado_GasLeak.ipynb   # treino do modelo final
+│   ├── dataset/      # criação do dataset e conversão das anotações
+│   ├── yolov4/       # detecção em imagens e vídeos com Darknet e OpenCV
+│   └── yolov8/       # exploração do YOLOv8 (detecção, validação, segmentação)
 ├── src/
 │   ├── train.py      # treino com os mesmos parâmetros do Colab
-│   └── detect.py     # inferência em imagem, vídeo, pasta ou câmera
+│   ├── detect.py     # inferência em imagem, vídeo, pasta ou câmera
+│   └── darknet/      # scripts de preparação do dataset para o YOLOv4
 ├── configs/
 │   ├── yolov8/       # configs_modelo.yaml (dataset) e args.yaml (hiperparâmetros do treino)
-│   └── darknet/      # obj.data e obj.names da versão YOLOv4/Darknet
+│   └── darknet/      # yolov4_custom.cfg, obj.data e obj.names
 ├── weights/
 │   └── best.pt       # modelo treinado (YOLOv8s, 22 MB)
 ├── results/
@@ -98,6 +110,27 @@ As saídas são salvas em `runs/detect/`. Treinar novamente (veja [`data/README.
 python src/train.py --epochs 500 --export-onnx
 ```
 
+### Notebooks
+
+| Notebook | O que faz |
+|---|---|
+| [`YOLOv8_Treinamento_Customizado_GasLeak`](notebooks/YOLOv8_Treinamento_Customizado_GasLeak.ipynb) | Treino, validação, testes em imagens e vídeos e exportação para ONNX do modelo final |
+| [`dataset/Criando_dataset_Darknet`](notebooks/dataset/Criando_dataset_Darknet.ipynb) | Coleta das imagens, conversão das anotações e geração dos arquivos `.cfg`, `obj.data`, `train.txt` e `test.txt` |
+| [`yolov4/Deteccao_imagens_Darknet`](notebooks/yolov4/Deteccao_imagens_Darknet.ipynb) | Detecção em imagens com YOLOv4 e Darknet |
+| [`yolov4/Deteccao_videos_Darknet_GPU`](notebooks/yolov4/Deteccao_videos_Darknet_GPU.ipynb) | Detecção em vídeos com Darknet (GPU) |
+| [`yolov4/Deteccao_imagens_OpenCV_CPU`](notebooks/yolov4/Deteccao_imagens_OpenCV_CPU.ipynb) | Detecção em imagens com o módulo DNN do OpenCV (CPU) |
+| [`yolov4/Deteccao_videos_OpenCV_modelo_treinado`](notebooks/yolov4/Deteccao_videos_OpenCV_modelo_treinado.ipynb) | Detecção em vídeos com OpenCV usando o modelo YOLOv4 treinado |
+| [`yolov8/Exploracao_YOLOv8_GPU`](notebooks/yolov8/Exploracao_YOLOv8_GPU.ipynb) | Testes com o YOLOv8: limiar, múltiplas imagens, validação, vídeos e segmentação |
+
+### Pipeline YOLOv4/Darknet
+
+Os scripts em [`src/darknet`](src/darknet) preparam o dataset no formato do Darknet:
+
+- `converter_annotations.py` converte as anotações (XMin, YMin, XMax, YMax) para o formato normalizado do YOLO, usando as classes de `classes.txt`;
+- `gerar_train.py` e `gerar_test.py` geram as listas `train.txt` e `test.txt` a partir de `data/obj` e `data/valid`.
+
+O treino usa [`configs/darknet/yolov4_custom.cfg`](configs/darknet/yolov4_custom.cfg) (entrada 608×608, 1 classe).
+
 ## Desafios e próximos passos
 
 - **Dados:** há poucas imagens públicas de vazamentos em câmeras OGI. O dataset foi montado a partir de fontes públicas (TensorFlow, ImageNet, Kaggle, GitHub, Google) e anotado manualmente.
@@ -107,5 +140,5 @@ python src/train.py --epochs 500 --export-onnx
 ## Links
 
 - Notebook no Colab: https://colab.research.google.com/drive/1HVmY2yG92IVbBllGE5xDI1HWjclknZVJ
-- Dataset no Roboflow: https://app.roboflow.com/roberli/detector-de-gas
+- Datasets públicos no Roboflow Universe (CC BY 4.0): [detecção](https://universe.roboflow.com/roberli/gas-leak-x7van-qfi52/dataset/1) e [segmentação](https://universe.roboflow.com/roberli/gas-leak-ka6fi-uahui/dataset/1)
 - Arquivos do projeto (vídeos, pesos, dataset zipado): https://drive.google.com/drive/folders/1fbmdwq0HorSvJ0A4UIHge39IE8-hVHQb
